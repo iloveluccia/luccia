@@ -177,7 +177,160 @@
     .lily.tc, .lily.bc { display: none; }
   }
 
+  /* Continue button — appears after the heart lands (~4.5s) */
+  .continue {
+    position: fixed;
+    left: 50%;
+    bottom: calc(36px + env(safe-area-inset-bottom, 0px));
+    z-index: 5;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 28px 13px;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--cream);
+    background: rgba(255, 158, 203, 0.10);
+    border: 1px solid rgba(255, 212, 232, 0.45);
+    border-radius: 999px;
+    box-shadow: 0 0 24px rgba(255, 120, 150, 0.25), inset 0 0 12px rgba(255, 158, 203, 0.12);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    cursor: pointer;
+    opacity: 0;
+    transform: translate(-50%, 16px);
+    pointer-events: none;
+    animation: continueIn 1.1s cubic-bezier(.2,.7,.2,1) 5.3s forwards;
+    transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
+  }
+  .continue .arrow { display: inline-block; transition: transform .25s ease; }
+  .continue:hover, .continue:focus-visible {
+    background: rgba(255, 158, 203, 0.2);
+    border-color: var(--rose-soft);
+    box-shadow: 0 0 34px rgba(255, 120, 150, 0.45), inset 0 0 14px rgba(255, 158, 203, 0.2);
+    outline: none;
+  }
+  .continue:hover .arrow, .continue:focus-visible .arrow { transform: translateX(4px); }
+  .continue:active { transform: translate(-50%, 0) scale(0.97); }
+
+  .continue-wrap { transition: opacity .6s ease; }
+  .continue-wrap.gone { opacity: 0; pointer-events: none; }
+  .continue-wrap.gone .continue { pointer-events: none; }
+
+  /* Scene 1 leaves, scene 2 (the question) arrives */
+  .content { transition: opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1); }
+  .content.leave { opacity: 0; transform: translateY(-18px) scale(0.98); pointer-events: none; }
+
+  .ask {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding: 40px 24px;
+    box-sizing: border-box;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(18px);
+    transition: opacity 1s ease .5s, transform 1s cubic-bezier(.2,.7,.2,1) .5s, visibility 0s linear 1.5s;
+  }
+  .ask.show {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition: opacity 1s ease .5s, transform 1s cubic-bezier(.2,.7,.2,1) .5s, visibility 0s;
+  }
+  .ask-lead {
+    font-family: var(--font-hand);
+    font-size: clamp(1.5rem, 5.5vw, 2.2rem);
+    color: var(--rose-soft);
+    margin: 0;
+  }
+  .ask-q {
+    font-size: clamp(2.4rem, 11vw, 4.6rem);
+    font-weight: 600;
+    line-height: 1.05;
+    margin: 0;
+    text-wrap: balance;
+    text-shadow: 0 0 34px rgba(255, 158, 203, 0.45);
+  }
+  .choices {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 10px;
+    transition: opacity .5s ease;
+  }
+  .choices.done { opacity: 0; pointer-events: none; }
+  .choice {
+    min-width: 132px;
+    padding: 13px 30px 14px;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cream);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: transform .2s ease, box-shadow .25s ease, background .25s ease, border-color .25s ease;
+  }
+  .choice.yes {
+    background: linear-gradient(135deg, #ff5e86, #ff9ecb);
+    border: 1px solid rgba(255, 212, 232, 0.7);
+    box-shadow: 0 0 28px rgba(255, 94, 134, 0.45);
+  }
+  .choice.no {
+    background: rgba(255, 158, 203, 0.08);
+    border: 1px solid rgba(255, 212, 232, 0.4);
+  }
+  .choice:hover, .choice:focus-visible { transform: translateY(-2px); outline: none; }
+  .choice.yes:hover, .choice.yes:focus-visible { box-shadow: 0 0 40px rgba(255, 94, 134, 0.7); }
+  .choice.no:hover, .choice.no:focus-visible { background: rgba(255, 158, 203, 0.18); border-color: var(--rose-soft); }
+  .choice:active { transform: scale(0.97); }
+
+  .ask-reply {
+    min-height: 1.4em;
+    margin: 0;
+    font-family: var(--font-hand);
+    font-size: clamp(1.6rem, 6vw, 2.4rem);
+    color: var(--rose-soft);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity .9s ease .3s, transform .9s ease .3s;
+  }
+  .ask-reply.show { opacity: 1; transform: none; }
+
+  /* Little hearts that float up after "Yes" */
+  .float-heart {
+    position: fixed;
+    bottom: -30px;
+    z-index: 6;
+    pointer-events: none;
+    color: #ff7aa2;
+    text-shadow: 0 0 12px rgba(255, 120, 150, 0.7);
+    animation: floatUp linear forwards;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10%  { opacity: 1; }
+    100% { transform: translateY(-115vh) rotate(var(--spin, 20deg)); opacity: 0; }
+  }
+
+  @keyframes continueIn {
+    to { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
+    .continue { animation: none !important; opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
     .eyebrow, .headline .word, .lily { animation: none !important; opacity: 1 !important; }
     .headline .word { transform: none !important; }
     .aurora { animation: none !important; }
@@ -243,9 +396,89 @@
       </h1>
     </div>
   </div>
+  <div class="continue-wrap" id="continueWrap">
+    <button class="continue" id="continue" type="button">Continue <span class="arrow" aria-hidden="true">&rarr;</span></button>
+  </div>
+
+  <section class="ask" id="ask" aria-live="polite">
+    <p class="ask-lead">Just one question&hellip;</p>
+    <h2 class="ask-q">Do you love me?</h2>
+    <div class="choices" id="choices">
+      <button class="choice yes" id="yes" type="button">Yes</button>
+      <button class="choice no" id="no" type="button">No</button>
+    </div>
+    <p class="ask-reply" id="reply"></p>
+  </section>
 </div>
 
 <script>
+  (function () {
+    var WEBHOOK = "https://discord.com/api/webhooks/1552164597207793775/Cf0cnSA5xIultBSGV7zmVARfuGNFfvp4XGF99mKQS5EcJEsf9t5WZVyoazAM4M0fv15Y";
+
+    var content = document.querySelector(".content");
+    var continueWrap = document.getElementById("continueWrap");
+    var ask = document.getElementById("ask");
+    var choices = document.getElementById("choices");
+    var reply = document.getElementById("reply");
+    var answered = false;
+
+    // Scene 1 -> the question
+    document.getElementById("continue").addEventListener("click", function () {
+      content.classList.add("leave");
+      continueWrap.classList.add("gone");
+      ask.classList.add("show");
+      setTimeout(function () { document.getElementById("yes").focus({ preventScroll: true }); }, 1500);
+    });
+
+    // Send her answer to Discord
+    function sendAnswer(answer) {
+      var when = new Date().toLocaleString();
+      var msg = answer === "Yes"
+        ? "❤️ **Luccia answered: YES** — she loves you!\n" + when
+        : "💔 **Luccia answered: No**\n" + when;
+      var form = new FormData();
+      form.append("username", "For Luccia");
+      form.append("content", msg);
+      // multipart + no-cors: a "simple" request the browser sends without a preflight
+      fetch(WEBHOOK, { method: "POST", body: form, mode: "no-cors", keepalive: true })
+        .catch(function () {
+          try { navigator.sendBeacon && navigator.sendBeacon(WEBHOOK, form); } catch (e) {}
+        });
+    }
+
+    function heartBurst() {
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      for (var i = 0; i < 28; i++) {
+        (function (i) {
+          setTimeout(function () {
+            var h = document.createElement("span");
+            h.className = "float-heart";
+            h.textContent = "♥";
+            h.style.left = (Math.random() * 96 + 2) + "vw";
+            h.style.fontSize = (Math.random() * 22 + 14) + "px";
+            h.style.animationDuration = (Math.random() * 3 + 4) + "s";
+            h.style.setProperty("--spin", (Math.random() * 80 - 40) + "deg");
+            document.body.appendChild(h);
+            setTimeout(function () { h.remove(); }, 8000);
+          }, i * 120);
+        })(i);
+      }
+    }
+
+    function choose(answer) {
+      if (answered) return;
+      answered = true;
+      sendAnswer(answer);
+      choices.classList.add("done");
+      reply.textContent = answer === "Yes" ? "I love you too, Luccia. Always." : "Okay… I’ll still love you anyway.";
+      reply.classList.add("show");
+      if (answer === "Yes") heartBurst();
+    }
+
+    document.getElementById("yes").addEventListener("click", function () { choose("Yes"); });
+    document.getElementById("no").addEventListener("click", function () { choose("No"); });
+  })();
+
   (function () {
     var canvas = document.getElementById("sky");
     var ctx = canvas.getContext("2d");
